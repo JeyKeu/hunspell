@@ -101,10 +101,11 @@ bool aff_parser::parse(std::istream& in)
     for (auto & c: command) c = toupper(c);
     auto& vec = table[command];
     ss >> ws;
-    getline(ss, parametar_line);
-    if (!parametar_line.empty()) {
-        vec.push_back(parametar_line);
+    if (ss.eof()) {
+        continue; //nothing more to read
     }
+    getline(ss, parametar_line);
+    vec.push_back(parametar_line);
   } while (!in.eof());
 
   return true;
@@ -138,13 +139,15 @@ int main() {
   string test =
     "SET UTF-8\n"
     "\n"
-    "TRY abcdef\n"
+    "TRY abcdef \n"
     "\n"
     "SFX A Y 2\n"
     "#comment1\n"
     "SFX A abc qwe .\n"
-    "   #comment2\n"
-    "  sfx A zxc abc .\n";
+    "  #comment2\n"
+    "  sfx A zxc abc .\n"
+    "  COMPLEXPREFIXES  \n"
+    "lang hu_HU #this is not comment. It's part of the parameter";
   stringstream ss(test);
   hunspell::aff_parser p;
   p.parse(ss);
